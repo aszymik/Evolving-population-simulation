@@ -34,7 +34,7 @@ def main():
                                 reproduction_thr=reproduction_thr,
                                 max_num_children=max_num_children,
                                 angle=angle)
-        df = population.simulation(generations=155)
+        df = population.simulation(generations=100)
         df.to_csv('df_all.csv')
         df = pd.read_csv('df_all.csv')
         opacity = np.where(df['type'] == 0, 1, 0.5)  # 1 for population, 0.5 for optimum
