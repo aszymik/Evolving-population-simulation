@@ -3,6 +3,8 @@ import numpy as np
 from matplotlib.animation import FuncAnimation
 from sklearn.decomposition import PCA
 import pandas as pd
+import plotly.express as px
+from typing import Tuple
 
 # TODO:
 # rozmiary / osie dopasować
@@ -14,10 +16,10 @@ import pandas as pd
 
 
 def rotate(vector, angle):
-  angle = 2 * np.pi * angle / 360
-  x = vector[0] * np.cos(angle) - vector[1] * np.sin(angle)
-  y = vector[0] * np.sin(angle) + vector[1] * np.cos(angle)
-  return np.array([x, y])
+    angle = 2 * np.pi * angle / 360
+    x = vector[0] * np.cos(angle) - vector[1] * np.sin(angle)
+    y = vector[0] * np.sin(angle) + vector[1] * np.cos(angle)
+    return np.array([x, y])
 
 
 class Population:
@@ -59,8 +61,8 @@ class Population:
 
     def mutation(self, organism: np.ndarray):
         if np.random.uniform() < self.mutation_prob:
-          mutation_index = np.random.randint(0, self.n)
-          organism[mutation_index] += np.random.normal(0, self.mutation_std)
+            mutation_index = np.random.randint(0, self.n)
+            organism[mutation_index] += np.random.normal(0, self.mutation_std)
         return organism
 
     def selection(self) -> None:
@@ -75,8 +77,8 @@ class Population:
 
         # Redukcja populacji do N osobników
         if len(self.population) > self.max_N:
-          np.random.shuffle(self.population)
-          self.population = self.population[:self.N]
+            np.random.shuffle(self.population)
+            self.population = self.population[:self.N]
 
     def reproduction(self) -> None:
         # Obliczanie dostosowania dla każdego osobnika w populacji
@@ -201,25 +203,29 @@ class Population:
     #     plt.show()
 
     def optima_df(self, x: int, y: int, gen: int) -> pd.DataFrame:
-        df = pd.DataFrame(columns=['x', 'y', 'generation', 'radius'])
+        df = pd.DataFrame(columns=['x', 'y', 'generation', 'radius', 'type'])
 
         for thr in self.offspring_thresholds:
             r = -2 * self.fitness_std ** 2 * np.log(thr) if thr != 0 else 0
-            df.loc[len(df)] = [x, y, gen, r]
+            df.loc[len(df)] = [x, y, gen, r, 1]
         df['generation'] = df['generation'].astype(int)
         return df
 
-    def simulation(self, generations: int) -> [pd.DataFrame, pd.DataFrame]:
+    def simulation(self, generations: int) -> pd.DataFrame:
         # 1. tworzenie pustego data frama do organizmów z odpowiednimi kolumnami (x, y, generation)
         # 2. tworzenie pustego data frame do optimów z kolumnami (x, y, generation, radius)
 
         pca_population = self.pca.transform(self.population)
         pca_optima = self.pca.transform(self.optimal_genotypes)
-        pop = pd.DataFrame({'x': pca_population[:, 0],
-                            'y': pca_population[:, 1],
-                            'generation': np.zeros(self.N, dtype=int),
-                            })
-        opt = self.optima_df(pca_optima[0, 0], pca_optima[0, 1], 0)
+        # df_sim = pd.DataFrame(columns=['x', 'y', 'generation', 'radius', 'type'])  # type 0-population, 1-optima
+        df_pop = pd.DataFrame({'x': pca_population[:, 0],
+                               'y': pca_population[:, 1],
+                               'generation': np.zeros(self.N, dtype=int),
+                               'radius': [None]*self.N,
+                               'type': [0]*self.N,
+                               })
+        df_opt = self.optima_df(pca_optima[0, 0], pca_optima[0, 1], 0)
+        df_sim = pd.concat([df_pop, df_opt], axis=0)
 
         for gen in range(1, generations+1):
             self.evolve(gen)
@@ -235,26 +241,35 @@ class Population:
                                'y': pca_population[:, 1],
                                'generation': np.ones(len(self.population), dtype=int) * gen,
                                })
-            pop = pd.concat([pop, df], axis=0)
+            df_sim = pd.concat([df_sim, df], axis=0)
 
             for i in range(len(pca_optima)):
                 x, y = pca_optima[i]
                 df = self.optima_df(x, y, gen)
-                opt = pd.concat([opt, df], axis=0)
+                df_sim = pd.concat([df_sim, df], axis=0)
 
-        return pop, opt
+        return df_sim
 
 
-population = Population(N=200,
-                        max_N=1000,
-                        n=2,
-                        env_change=0.02,
-                        T=50,
-                        mutation_prob=0.75,
-                        mutation_std=0.3,
-                        fitness_std=0.2,
-                        reproduction_thr=0.5,
-                        max_num_children=7,
-                        angle=30)
-
-population.simulation(generations=155) 
+# population = Population(N=200,
+#                         max_N=1000,
+#                         n=2,
+#                         env_change=0.02,
+#                         T=50,
+#                         mutation_prob=0.75,
+#                         mutation_std=0.3,
+#                         fitness_std=0.2,
+#                         reproduction_thr=0.5,
+#                         max_num_children=7,
+#                         angle=30)
+#
+# df_population, df_optimum = population.simulation(generations=155)
+#
+#
+# pop = px.scatter(df_population,
+#                  x="x",
+#                  y="y",
+#                  animation_frame="generation"
+#                  )
+#
+# pop.show()
