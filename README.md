@@ -1,2 +1,3 @@
-# System-Biology
-System Biology projects
+# Evolving population simulation app
+
+![screenshot 1](graphics/screen1.png)
