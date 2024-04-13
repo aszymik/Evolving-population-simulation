@@ -35,6 +35,7 @@ def main():
                                 reproduction_thr=reproduction_thr,
                                 max_num_children=max_num_children,
                                 angle=angle)
+
         df = population.simulation(generations=generations)
         df.to_csv('df_all.csv')
         df = pd.read_csv('df_all.csv')

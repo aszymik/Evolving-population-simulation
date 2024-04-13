@@ -220,7 +220,7 @@ class Population:
         df_pop = pd.DataFrame({'x': pca_population[:, 0],
                                'y': pca_population[:, 1],
                                'generation': np.zeros(self.N, dtype=int),
-                               'radius': [None]*self.N,
+                               'radius': [0.005]*self.N,
                                'type': [0]*self.N,
                                })
         df_opt = self.optima_df(pca_optima[0, 0], pca_optima[0, 1], 0)
@@ -239,6 +239,8 @@ class Population:
             df = pd.DataFrame({'x': pca_population[:, 0],
                                'y': pca_population[:, 1],
                                'generation': np.ones(len(self.population), dtype=int) * gen,
+                               'radius': [0.005] * len(self.population),
+                               'type': [0] * len(self.population),
                                })
             df_sim = pd.concat([df_sim, df], axis=0)
 
