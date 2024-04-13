@@ -21,6 +21,7 @@ def main():
         reproduction_thr = st.slider("Reproduction threshold", 0.0, 1.0, 0.5)
         max_num_children = st.number_input("Maximum number of children", value=7)
         angle = st.number_input("Rotation angle of optimal genotypes", value=30)
+        generations = st.number_input("Number of generations", value=50)
 
     if st.button("Run Simulation"):
         population = Population(N=N,
@@ -34,7 +35,7 @@ def main():
                                 reproduction_thr=reproduction_thr,
                                 max_num_children=max_num_children,
                                 angle=angle)
-        df = population.simulation(generations=155)
+        df = population.simulation(generations=generations)
         df.to_csv('df_all.csv')
         df = pd.read_csv('df_all.csv')
         opacity = np.where(df['type'] == 0, 1, 0.5)  # 1 for population, 0.5 for optimum
@@ -44,7 +45,8 @@ def main():
                          y="y",
                          size="radius",
                          opacity=opacity,
-                         animation_frame="generation"
+                         animation_frame="generation",
+                         color = "type"
                          )
         
         # fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 30 # ms

@@ -7,12 +7,11 @@ import plotly.express as px
 from typing import Tuple
 
 # TODO:
-# rozmiary / osie dopasować
-# zmienić funkcję reprodukcji – mutacje przy powstawaniu nowych osobników?
-# boxploty cech
-# obsłużyć wymieranie populacji
+# ogarnąć wymiary okręgów (PCA)
 # macierz PCA do wyliczania promieni koła – bierzemy dwa pierwsze wiersze z macierzy loadings
 # punkty na okręgu muszą spełniać rownanie exp(u-opt)... = fitness_threshold – z tego próbkujemy
+# ew. kolorki
+# legenda
 
 
 def rotate(vector, angle):
