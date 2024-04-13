@@ -206,7 +206,7 @@ class Population:
 
         for thr in self.offspring_thresholds:
             r = -2 * self.fitness_std ** 2 * np.log(thr) if thr != 0 else 0
-            df.loc[len(df)] = [x, y, gen, r, 1]
+            df.loc[len(df)] = [x, y, gen, r, 'optimum']
         df['generation'] = df['generation'].astype(int)
         return df
 
@@ -214,16 +214,16 @@ class Population:
         # 1. tworzenie pustego data frama do organizmów z odpowiednimi kolumnami (x, y, generation)
         # 2. tworzenie pustego data frame do optimów z kolumnami (x, y, generation, radius)
 
-        pca_population = self.pca.transform(self.population)
-        pca_optima = self.pca.transform(self.optimal_genotypes)
+        # pca_population = self.pca.transform(self.population)
+        # pca_optima = self.pca.transform(self.optimal_genotypes)
         # df_sim = pd.DataFrame(columns=['x', 'y', 'generation', 'radius', 'type'])  # type 0-population, 1-optima
-        df_pop = pd.DataFrame({'x': pca_population[:, 0],
-                               'y': pca_population[:, 1],
+        df_pop = pd.DataFrame({'x': self.population[:, 0],
+                               'y': self.population[:, 1],
                                'generation': np.zeros(self.N, dtype=int),
                                'radius': [0.005]*self.N,
-                               'type': [0]*self.N,
+                               'type': ['organism']*self.N,
                                })
-        df_opt = self.optima_df(pca_optima[0, 0], pca_optima[0, 1], 0)
+        df_opt = self.optima_df(self.optimal_genotypes[0][0], self.optimal_genotypes[0][1], 0)
         df_sim = pd.concat([df_pop, df_opt], axis=0)
 
         for gen in range(1, generations+1):
@@ -232,45 +232,20 @@ class Population:
                 break
 
             # 3. pca population +  concat pd.DataFrames
-            pca_population = self.pca.transform(self.population)
-
-            # 4. pca optima + concat pd.DataFrames
-            pca_optima = self.pca.transform(self.optimal_genotypes)
-            df = pd.DataFrame({'x': pca_population[:, 0],
-                               'y': pca_population[:, 1],
+            # pca_population = self.pca.transform(self.population)
+            df = pd.DataFrame({'x': self.population[:, 0],
+                               'y': self.population[:, 1],
                                'generation': np.ones(len(self.population), dtype=int) * gen,
                                'radius': [0.005] * len(self.population),
-                               'type': [0] * len(self.population),
+                               'type': ['organism'] * len(self.population),
                                })
             df_sim = pd.concat([df_sim, df], axis=0)
 
-            for i in range(len(pca_optima)):
-                x, y = pca_optima[i]
+            # 4. pca optima + concat pd.DataFrames
+            # pca_optima = self.pca.transform(self.optimal_genotypes)
+            for i in range(len(self.optimal_genotypes)):
+                x, y = self.optimal_genotypes[i]
                 df = self.optima_df(x, y, gen)
                 df_sim = pd.concat([df_sim, df], axis=0)
 
         return df_sim
-
-
-# population = Population(N=200,
-#                         max_N=1000,
-#                         n=2,
-#                         env_change=0.02,
-#                         T=50,
-#                         mutation_prob=0.75,
-#                         mutation_std=0.3,
-#                         fitness_std=0.2,
-#                         reproduction_thr=0.5,
-#                         max_num_children=7,
-#                         angle=30)
-#
-# df_population, df_optimum = population.simulation(generations=155)
-#
-#
-# pop = px.scatter(df_population,
-#                  x="x",
-#                  y="y",
-#                  animation_frame="generation"
-#                  )
-#
-# pop.show()
