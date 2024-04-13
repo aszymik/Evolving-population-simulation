@@ -192,6 +192,7 @@ pyrightconfig.json
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
+# My files
 df_optimum.csv
 df_population.csv
+df_all.csv
