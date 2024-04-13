@@ -203,8 +203,6 @@ class Population:
                         repeat=False)
     plt.show()
 
-
-# Przykład użycia
 population = Population(N=200,
                         max_N=1000,
                         n=2,
@@ -216,4 +214,4 @@ population = Population(N=200,
                         reproduction_thr=0.5,
                         max_num_children=7,
                         angle=30)
-population.simulation(generations=155)
+population.simulation(generations=155) 
