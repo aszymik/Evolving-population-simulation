@@ -1,6 +1,8 @@
 import streamlit as st
 import plotly.express as px
-from simulation import *
+import pandas as pd
+import numpy as np
+from simulation import Population
 
 
 def main():
@@ -32,18 +34,23 @@ def main():
                                 reproduction_thr=reproduction_thr,
                                 max_num_children=max_num_children,
                                 angle=angle)
-        df_population, df_optimum = population.simulation(generations=155)
+        df = population.simulation(generations=155)
+        df.to_csv('df_all.csv')
+        df = pd.read_csv('df_all.csv')
+        opacity = np.where(df['type'] == 0, 1, 0.5)  # 1 for population, 0.5 for optimum
 
-        # kolumny x, y, generation
-        fig = px.scatter(df_population, 
+        fig = px.scatter(df, 
                          x="x", 
-                         y="y", 
+                         y="y",
                          size="radius",
-                         animation_frame="generation")
+                         opacity=opacity,
+                         animation_frame="generation"
+                         )
         
-        fig.add_scatter(df_optimum,
+        # fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 30 # ms
+        # fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 5
 
-        )
+        st.plotly_chart(fig)
 
 
 if __name__ == "__main__":
