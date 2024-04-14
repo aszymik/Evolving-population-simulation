@@ -1,14 +1,10 @@
-import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.decomposition import PCA
 import pandas as pd
+from sklearn.decomposition import PCA
 
 # TODO:
-# ogarnąć wymiary okręgów (PCA)
-# macierz PCA do wyliczania promieni koła – bierzemy dwa pierwsze wiersze z macierzy loadings
-# punkty na okręgu muszą spełniać rownanie exp(u-opt)... = fitness_threshold – z tego próbkujemy
-# legenda
 # ile osobników w danym momencie
+# usunąć PCA
 # widoczność zeby organizmy były "u góry"
 # ew. jeśli nie ma osobników przy danym optimum to go nie printować ale za duzo roboty chyba
 

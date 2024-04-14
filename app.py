@@ -38,20 +38,33 @@ def main():
                                 max_num_children=max_num_children,
                                 angle=angle)
 
-        df = population.simulation(generations=generations)
+        # df = population.simulation(generations=generations)
         # df.to_csv('df_all.csv')
-        # df = pd.read_csv('df_all.csv')
+        df = pd.read_csv('df_all.csv')
+
+        # Calculate the number of individuals per generation
+        df_organisms = df[df['type'] == 'organism']
+        num_individuals = df_organisms.groupby('generation').size()
+
         fig = px.scatter(df,
                          x="x", 
                          y="y",
                          size="radius",
                          animation_frame="generation",
                          color="type",
-                         color_discrete_map={'organism':'rgba(180, 151, 231, 1.0)', 'optimum':'rgba(201, 219, 116, 0.2)'}
+                         color_discrete_map={'optimum':'rgba(201, 219, 116, 0.2)', 'organism':'rgba(180, 151, 231, 1.0)'},
+                         title=f"Population size: {num_individuals[0]}"
                          )
 
         fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 30  # ms
         fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 5
+  
+        # Change frame titles
+        for button in fig.layout.updatemenus[0].buttons:
+            button['args'][1]['frame']['redraw'] = True
+
+        for i in range(len(fig.frames)):
+            fig.frames[i]['layout'].update(title_text=f'<b>Population size: {num_individuals[i]}</b>')
 
         st.plotly_chart(fig)
 
