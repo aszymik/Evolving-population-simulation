@@ -7,9 +7,10 @@ import pandas as pd
 # ogarnąć wymiary okręgów (PCA)
 # macierz PCA do wyliczania promieni koła – bierzemy dwa pierwsze wiersze z macierzy loadings
 # punkty na okręgu muszą spełniać rownanie exp(u-opt)... = fitness_threshold – z tego próbkujemy
-# opacity
 # legenda
-# rozmnazanie i offspring thresholds
+# ile osobników w danym momencie
+# widoczność zeby organizmy były "u góry"
+# ew. jeśli nie ma osobników przy danym optimum to go nie printować ale za duzo roboty chyba
 
 
 def rotate(vector, angle):
@@ -22,7 +23,7 @@ def rotate(vector, angle):
 class Population:
 
     def __init__(self, N, max_N, n, env_change, T, mutation_prob, mutation_std,
-                   fitness_std, reproduction_thr, max_num_children, angle):
+                   fitness_std, fitness_thr, max_num_children, angle):
         self.N = N
         self.max_N = max_N
         self.n = n
@@ -32,12 +33,11 @@ class Population:
         self.mutation_std = mutation_std
         self.optimal_genotypes = [np.random.normal(0, 0.05, size=self.n)]
         self.population = self.initialize_population()
-        self.reproduction_threshold = reproduction_thr,
         self.max_num_children = max_num_children
         self.angle = angle
-        self.fitness_threshold = self.fitness_threshold = len(
-            self.population) / (len(self.population) + self.max_N//2)
-
+        # self.fitness_threshold = len(
+        #     self.population) / (len(self.population) + self.max_N//2)
+        self.fitness_threshold = fitness_thr
         self.offspring_thresholds = np.linspace(self.fitness_threshold, 1, num=self.max_num_children+1)
         self.fitness_std = fitness_std
         self.pca = PCA(n_components=2)
@@ -81,15 +81,11 @@ class Population:
         # Obliczanie dostosowania dla każdego osobnika w populacji
         fitness_scores = np.array(
             [self.fitness_function(organism) for organism in self.population])
-
-        # Podział na 8 grup na podstawie dostosowania
-        offspring_thresholds = np.linspace(self.fitness_threshold,
-                                           1,
-                                           num=self.max_num_children + 1)
-        self.offspring_thresholds = offspring_thresholds
+        
         offspring_groups = np.digitize(fitness_scores,
-                                       offspring_thresholds,
+                                       self.offspring_thresholds,
                                        right=True)
+        
         # Przypisanie liczby dzieci dla każdego osobnika w zależności od fitness
         num_offspring_by_group = np.arange(0, self.max_num_children + 1)
 
@@ -172,3 +168,4 @@ class Population:
                 df_sim = pd.concat([df_sim, df], axis=0)
 
         return df_sim
+  
