@@ -16,7 +16,7 @@ def main():
         N = st.number_input("Initial population size", value=200)
         max_N = st.number_input("Maximum population size", value=1000)
         # n = st.number_input("Number of genes", value=2)
-        env_change = st.number_input("Environmental change rate", value=0.05)
+        env_change = st.number_input("Environmental change rate", value=0.1)
         T = st.number_input("Time for significant environmental change", value=5)
         mutation_prob = st.slider("Mutation probability", 0.0, 1.0, 0.75)
         mutation_std = st.number_input("Mutation standard deviation", value=0.3)

@@ -31,8 +31,6 @@ class Population:
         self.population = self.initialize_population()
         self.max_num_children = max_num_children
         self.angle = angle
-        # self.fitness_threshold = len(
-        #     self.population) / (len(self.population) + self.max_N//2)
         self.fitness_threshold = fitness_thr
         self.offspring_thresholds = np.linspace(self.fitness_threshold, 1, num=self.max_num_children+2)
         self.fitness_std = fitness_std
@@ -111,7 +109,6 @@ class Population:
             self.population = self.population[:self.max_N]
 
         self.environment_change(generation)
-        self.fitness_threshold = len(self.population) / (len(self.population) + self.max_N//2)
 
     def optima_df(self, x: int, y: int, gen: int) -> pd.DataFrame:
         df = pd.DataFrame(columns=['x', 'y', 'generation', 'radius', 'type'])
