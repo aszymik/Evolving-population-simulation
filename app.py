@@ -12,17 +12,17 @@ def main():
 
     with st.sidebar:
         st.title("Select parameters")
-        generations = st.number_input("Number of generations", value=30)
+        generations = st.number_input("Number of generations", value=100)
         N = st.number_input("Initial population size", value=200)
         max_N = st.number_input("Maximum population size", value=1000)
         # n = st.number_input("Number of genes", value=2)
-        env_change = st.number_input("Environmental change rate", value=0.1)
+        env_change = st.number_input("Environmental change rate", value=0.05)
         T = st.number_input("Time for significant environmental change", value=5)
         mutation_prob = st.slider("Mutation probability", 0.0, 1.0, 0.75)
         mutation_std = st.number_input("Mutation standard deviation", value=0.3)
         fitness_std = st.number_input("Fitness standard deviation", value=0.2)
         fitness_thr = st.slider("Fitness threshold for survival", 0.0, 1.0, 0.3)
-        max_num_children = st.number_input("Maximum number of children", value=7)
+        max_num_children = st.number_input("Maximum number of children", value=4)
         angle = st.number_input(u"Rotation angle of optimal genotypes (\xb0)", value=30)
 
     if st.button("Run Simulation"):
@@ -38,9 +38,9 @@ def main():
                                 max_num_children=max_num_children,
                                 angle=angle)
 
-        # df = population.simulation(generations=generations)
+        df = population.simulation(generations=generations)
         # df.to_csv('df_all.csv')
-        df = pd.read_csv('df_all.csv')
+        # df = pd.read_csv('df_all.csv')
 
         # Calculate the number of individuals per generation
         df_organisms = df[df['type'] == 'organism']
@@ -52,7 +52,9 @@ def main():
                          size="radius",
                          animation_frame="generation",
                          color="type",
-                         color_discrete_map={'optimum':'rgba(201, 219, 116, 0.2)', 'organism':'rgba(180, 151, 231, 1.0)'},
+                         color_discrete_map={'optimum': 'rgba(201, 219, 116, 0.2)', 'organism': 'rgba(180, 151, 231, 1.0)'},
+                         range_x=[-2.5, 2.5],
+                         range_y=[-2.5, 2.5],
                          title=f"Population size: {num_individuals[0]}"
                          )
 

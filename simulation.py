@@ -34,7 +34,7 @@ class Population:
         # self.fitness_threshold = len(
         #     self.population) / (len(self.population) + self.max_N//2)
         self.fitness_threshold = fitness_thr
-        self.offspring_thresholds = np.linspace(self.fitness_threshold, 1, num=self.max_num_children+1)
+        self.offspring_thresholds = np.linspace(self.fitness_threshold, 1, num=self.max_num_children+2)
         self.fitness_std = fitness_std
         self.pca = PCA(n_components=2)
         self.pca.fit(self.population)
@@ -68,30 +68,21 @@ class Population:
             if fitness >= self.fitness_threshold
         ])
 
-        # Redukcja populacji do N osobników
-        if len(self.population) > self.max_N:
-            np.random.shuffle(self.population)
-            self.population = self.population[:self.N]
-
     def reproduction(self) -> None:
         # Obliczanie dostosowania dla każdego osobnika w populacji
         fitness_scores = np.array(
             [self.fitness_function(organism) for organism in self.population])
-        
+
+        # Przypisanie liczby dzieci dla każdego osobnika w zależności od fitness
         offspring_groups = np.digitize(fitness_scores,
                                        self.offspring_thresholds,
                                        right=True)
-        
-        # Przypisanie liczby dzieci dla każdego osobnika w zależności od fitness
-        num_offspring_by_group = np.arange(0, self.max_num_children + 1)
 
         # Reprodukcja z uwzględnieniem liczby dzieci
         offspring = []
-        for group, num_offspring in zip(offspring_groups, num_offspring_by_group):
-            group_indices = np.where(offspring_groups == group)[0]
-            for parent_index in group_indices:
-                for _ in range(num_offspring):
-                    offspring.append(self.population[parent_index].copy())
+        for parent_index, num_offspring in enumerate(offspring_groups):
+            for _ in range(num_offspring - 1):
+                offspring.append(self.population[parent_index].copy())
 
         # Aktualizacja populacji
         self.population = np.array(offspring)  # osobnik żyje tylko jedno pokolenie
@@ -113,6 +104,12 @@ class Population:
             [self.mutation(organism) for organism in self.population])
         self.selection()
         self.reproduction()
+
+        # Redukcja populacji do max_N osobników
+        if len(self.population) > self.max_N:
+            np.random.shuffle(self.population)
+            self.population = self.population[:self.max_N]
+
         self.environment_change(generation)
         self.fitness_threshold = len(self.population) / (len(self.population) + self.max_N//2)
 
