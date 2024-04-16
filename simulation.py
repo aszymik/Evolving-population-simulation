@@ -1,10 +1,7 @@
 import numpy as np
 import pandas as pd
-from sklearn.decomposition import PCA
 
 # TODO:
-# ile osobników w danym momencie
-# usunąć PCA
 # widoczność zeby organizmy były "u góry"
 # ew. jeśli nie ma osobników przy danym optimum to go nie printować ale za duzo roboty chyba
 
@@ -31,13 +28,9 @@ class Population:
         self.population = self.initialize_population()
         self.max_num_children = max_num_children
         self.angle = angle
-        # self.fitness_threshold = len(
-        #     self.population) / (len(self.population) + self.max_N//2)
         self.fitness_threshold = fitness_thr
         self.offspring_thresholds = np.linspace(self.fitness_threshold, 1, num=self.max_num_children+2)
         self.fitness_std = fitness_std
-        self.pca = PCA(n_components=2)
-        self.pca.fit(self.population)
 
     def initialize_population(self):
         return np.array([
@@ -96,7 +89,7 @@ class Population:
             self.optimal_genotypes.append(new)
         else:
             self.optimal_genotypes = [
-                opt + self.env_change * opt for opt in self.optimal_genotypes
+                opt + self.env_change * (opt / np.linalg.norm(opt)) for opt in self.optimal_genotypes
             ]
 
     def evolve(self, generation):
@@ -116,7 +109,7 @@ class Population:
         df = pd.DataFrame(columns=['x', 'y', 'generation', 'radius', 'type'])
 
         for thr in self.offspring_thresholds:
-            r = -2 * self.fitness_std ** 2 * np.log(thr) if thr != 0 else 0
+            r = -2 * (self.fitness_std ** 2) * np.log(thr) if thr != 0 else 0
             df.loc[len(df)] = [x, y, gen, r, 'optimum']
         df['generation'] = df['generation'].astype(int)
         return df
@@ -125,8 +118,6 @@ class Population:
         # 1. tworzenie pustego data frama do organizmów z odpowiednimi kolumnami (x, y, generation)
         # 2. tworzenie pustego data frame do optimów z kolumnami (x, y, generation, radius)
 
-        # pca_population = self.pca.transform(self.population)
-        # pca_optima = self.pca.transform(self.optimal_genotypes)
         # df_sim = pd.DataFrame(columns=['x', 'y', 'generation', 'radius', 'type'])  # type 0-population, 1-optima
         df_pop = pd.DataFrame({'x': self.population[:, 0],
                                'y': self.population[:, 1],
@@ -142,8 +133,7 @@ class Population:
             if len(self.population) == 0:
                 break
 
-            # 3. pca population +  concat pd.DataFrames
-            # pca_population = self.pca.transform(self.population)
+            # 3. simulation data + concat pd.DataFrames
             df = pd.DataFrame({'x': self.population[:, 0],
                                'y': self.population[:, 1],
                                'generation': np.ones(len(self.population), dtype=int) * gen,
@@ -152,8 +142,7 @@ class Population:
                                })
             df_sim = pd.concat([df_sim, df], axis=0)
 
-            # 4. pca optima + concat pd.DataFrames
-            # pca_optima = self.pca.transform(self.optimal_genotypes)
+            # 4. optima data + concat pd.DataFrames
             for i in range(len(self.optimal_genotypes)):
                 x, y = self.optimal_genotypes[i]
                 df = self.optima_df(x, y, gen)
