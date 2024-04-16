@@ -23,7 +23,7 @@ def main():
         fitness_std = st.number_input("Fitness standard deviation", value=0.2)
         fitness_thr = st.slider("Fitness threshold for survival", 0.0, 1.0, 0.3)
         max_num_children = st.number_input("Maximum number of children", value=4)
-        angle = st.number_input(u"Rotation angle of optimal genotypes (\xb0)", value=30)
+        angle = st.number_input(u"Rotation angle of optimal genotypes [\xb0]", value=30)
 
     if st.button("Run Simulation"):
         population = Population(N=N,
