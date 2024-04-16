@@ -1,6 +1,7 @@
 import streamlit as st
 import plotly.express as px
 from simulation import Population
+import pandas as pd
 
 
 def main():
@@ -46,7 +47,6 @@ def main():
                          size="radius",
                          animation_frame="generation",
                          color="type",
-                         # color_discrete_map={'optimum': 'rgba(201, 219, 116, 0.2)', 'organism': 'rgba(180, 151, 231, 1.0)'},
                          color_discrete_map={'optimum': 'rgba(188, 209, 88, 0.9)', 'organism': 'rgba(180, 151, 231, 1.0)'},
                          symbol="type",
                          symbol_map={'optimum': 'circle-open-dot', 'organism': 'circle'},
@@ -55,6 +55,16 @@ def main():
                          title=f"Population size: {N}"
                          )
         
+        fig.add_annotation(text="(radii related<br>to the number<br>of offspring)",
+                           align="right",
+                           showarrow=False,
+                           y=0.7,
+                           x=1.18,
+                           xref="paper",
+                           yref="paper",
+                           font=dict(size=9.5),
+                           )
+
         # Szybkość animacji
         fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 30  # ms
         fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 5
