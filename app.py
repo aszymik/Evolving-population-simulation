@@ -1,7 +1,6 @@
 import streamlit as st
 import plotly.express as px
 from simulation import Population
-import pandas as pd
 
 
 def main():
