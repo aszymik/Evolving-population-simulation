@@ -196,3 +196,5 @@ pyrightconfig.json
 df_optimum.csv
 df_population.csv
 df_all.csv
+.DS_Store
+graphics/.DS_Store

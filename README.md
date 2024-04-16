@@ -1,6 +1,6 @@
 # Aplikacja do symulacji ewolucji populacji
 
-![screenshot 1](graphics/screen1.png)
+![screenshot 1](graphics/app_screen.png)
 
 ## Opis Aplikacji
 
