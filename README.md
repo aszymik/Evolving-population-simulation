@@ -4,7 +4,7 @@
 
 ## Opis Aplikacji
 
-Jest to aplikacja **Streamlit** do symulowania ewolucji populacji. W aplikacji można zmieniać różne parametry, takie jak:
+Jest to aplikacja **Streamlit** do symulowania ewolucji populacji uwzględniający specjację gatunków. W aplikacji można zmieniać różne parametry, takie jak:
 
 - Liczba pokoleń
 - Prawdopodobieństwo mutacji
