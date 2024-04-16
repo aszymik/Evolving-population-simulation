@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 
 # TODO:
-# ile osobników w danym momencie
 # widoczność zeby organizmy były "u góry"
 # ew. jeśli nie ma osobników przy danym optimum to go nie printować ale za duzo roboty chyba
 
