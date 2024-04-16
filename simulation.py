@@ -111,7 +111,6 @@ class Population:
             self.population = self.population[:self.max_N]
 
         self.environment_change(generation)
-        self.fitness_threshold = len(self.population) / (len(self.population) + self.max_N//2)
 
     def optima_df(self, x: int, y: int, gen: int) -> pd.DataFrame:
         df = pd.DataFrame(columns=['x', 'y', 'generation', 'radius', 'type'])
