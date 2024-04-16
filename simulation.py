@@ -89,7 +89,7 @@ class Population:
             self.optimal_genotypes.append(new)
         else:
             self.optimal_genotypes = [
-                opt + self.env_change * opt for opt in self.optimal_genotypes
+                opt + self.env_change * (opt / np.linalg.norm(opt)) for opt in self.optimal_genotypes
             ]
 
     def evolve(self, generation):
@@ -109,7 +109,7 @@ class Population:
         df = pd.DataFrame(columns=['x', 'y', 'generation', 'radius', 'type'])
 
         for thr in self.offspring_thresholds:
-            r = -2 * self.fitness_std ** 2 * np.log(thr) if thr != 0 else 0
+            r = -2 * (self.fitness_std ** 2) * np.log(thr) if thr != 0 else 0
             df.loc[len(df)] = [x, y, gen, r, 'optimum']
         df['generation'] = df['generation'].astype(int)
         return df
