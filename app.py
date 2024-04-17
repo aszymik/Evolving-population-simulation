@@ -82,6 +82,7 @@ def main():
         st.plotly_chart(fig)
 
         # Historie optymalnych genotypów – gatunków
+        st.write('\n\n')
         st.subheader('Species history')
         opt = pd.DataFrame(opt_data)
         opt = opt.T
