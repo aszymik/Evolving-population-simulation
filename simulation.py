@@ -2,14 +2,6 @@ import numpy as np
 import pandas as pd
 
 
-def rotate(vector: np.ndarray, angle: int) -> np.ndarray:
-    """Obraca wektor o dany kąt (w stopniach) i zwraca nowopowstały wektor"""
-    angle = 2 * np.pi * angle / 360
-    x = vector[0] * np.cos(angle) - vector[1] * np.sin(angle)
-    y = vector[0] * np.sin(angle) + vector[1] * np.cos(angle)
-    return np.array([x, y])
-
-
 class OptimalGenotype:
     
     def __init__(self, n, angle, env_change, vector=None):
@@ -25,11 +17,11 @@ class OptimalGenotype:
     def rotate(self):
         """Zmienia genotyp, obracając w jednym kierunku i zwraca 
         nowy optymalny genotyp, utworzony przez obrót w przeciwną stronę"""
-        x1 = self.genotype[0] * np.cos(self.angle) - self.genotype[1] * np.sin(self.angle)
-        y1 = self.genotype[0] * np.sin(self.angle) + self.genotype[1] * np.cos(self.angle)
+        x1 = self.genotype[0] * np.cos(-self.angle) - self.genotype[1] * np.sin(-self.angle)
+        y1 = self.genotype[0] * np.sin(-self.angle) + self.genotype[1] * np.cos(-self.angle)
 
-        x2 = self.genotype[0] * np.cos(-self.angle) - self.genotype[1] * np.sin(-self.angle)
-        y2 = self.genotype[0] * np.sin(-self.angle) + self.genotype[1] * np.cos(-self.angle)
+        x2 = self.genotype[0] * np.cos(self.angle) - self.genotype[1] * np.sin(self.angle)
+        y2 = self.genotype[0] * np.sin(self.angle) + self.genotype[1] * np.cos(self.angle)
 
         self.genotype = np.array([x1, y1])
         return OptimalGenotype(self.n, self.angle, self.env_change_rate, np.array([x2, y2]))
@@ -160,23 +152,19 @@ class Population:
         """
         Symuluje ewolucję populacji przez określoną liczbę pokoleń.
 
-        Parametry:
-        generations: Liczba pokoleń do symulacji.
-
-        Zwraca:
-        pd.DataFrame: DataFrame z danymi symulacji o kolumnach:
+        Zwraca: pd.DataFrame z danymi symulacji o kolumnach:
           * x, y – współrzędne punktów,
           * generation – nr pokolenia, 
           * radius – promień punktu (wazny szczególnie w przypadku optymalnych genotypów) 
           * type:  0 – populacja, 1 – optima
         """
 
-        # 1. Tworzenie pustego DataFrame z danymi o organizmach
+        # 1. Tworzenie DataFrame z danymi o organizmach
         df_pop = pd.DataFrame({'x': self.population[:, 0],
                                'y': self.population[:, 1],
                                'generation': np.zeros(self.N, dtype=int),
-                               'radius': [0.005]*self.N,
-                               'type': ['organism']*self.N,
+                               'radius': [0.005] * self.N,
+                               'type': ['organism'] * self.N,
                                })
         
         # 2. Tworzenie DataFrame z optymalnymi genotypami
@@ -203,5 +191,20 @@ class Population:
                 df = self.optima_df(self.optimal_genotypes[i], gen)
                 df_sim = pd.concat([df_sim, df], axis=0)
 
-        return df_sim
+        # dajemy zera z przodu i dzieki temu mozemy zrobic plot
+        # zwraca macierz, ktorej rzedami są historie genotypów, paddowane zerami
+
+        # opt_data = pd.DataFrame(columns=['env_change', 'num_generations', 'extinct'])        
+        # for opt in self.optimal_genotypes:
+        #     if len(opt.history):
+        #         num_gen = np.count_nonzero(opt.history)
+        #         extinct = (opt.history[-1] == 0)
+        #         opt_data.loc[len(opt_data)] = [opt.env_change_rate, num_gen, extinct]
+
+        opt_data = np.zeros((len(self.optimal_genotypes), generations+1))
+        for i, opt in enumerate(self.optimal_genotypes):
+            start = generations - len(opt.history) + 1
+            opt_data[i][start:] = opt.history
+
+        return df_sim, opt_data
   

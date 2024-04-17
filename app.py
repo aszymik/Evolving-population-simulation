@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.express as px
+import pandas as pd
 from simulation import Population
 
 
@@ -37,7 +38,7 @@ def main():
                                 max_num_children=max_num_children,
                                 angle=angle)
 
-        df = population.simulation(generations=generations)
+        df, opt_data = population.simulation(generations=generations)
 
         # Wykres
         fig = px.scatter(df,
@@ -79,6 +80,17 @@ def main():
             fig.frames[i]['layout'].update(title_text=f'<b>Population size: {num_individuals[i]}</b>')
 
         st.plotly_chart(fig)
+
+        # Historie optymalnych genotypów – gatunków
+        st.subheader('Species history')
+        opt = pd.DataFrame(opt_data)
+        opt = opt.T
+        fig2 = px.line(opt)
+        fig2.update_layout(xaxis_title="generation",
+                           yaxis_title="number of organisms",
+                           showlegend=False
+                           )
+        st.plotly_chart(fig2)
 
 
 if __name__ == "__main__":
