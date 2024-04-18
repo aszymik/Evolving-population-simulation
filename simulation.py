@@ -6,6 +6,7 @@ class OptimalGenotype:
     
     def __init__(self, n, angle, env_change, vector=None):
         self.n = n
+        # jaki kształt ma ten wektor jak sie losuje? Kiedy losujemy?
         self.genotype = vector if vector is not None else np.random.normal(0, 0.05, size=self.n)
         self.angle = angle
         self.env_change_rate = env_change
@@ -30,7 +31,6 @@ class OptimalGenotype:
         self.genotype += self.env_change_rate * (self.genotype / np.linalg.norm(self.genotype))
 
 
-
 class Population:
 
     def __init__(self, N, max_N, n, env_change, T, mutation_prob, mutation_std,
@@ -38,7 +38,7 @@ class Population:
         self.N = N
         self.max_N = max_N
         self.n = n
-        self.T = T  # czas kiedy zachodzi duża zmiana w środowisku
+        self.T = T   # czas, kiedy zachodzi duża zmiana w środowisku
         self.mutation_prob = mutation_prob
         self.mutation_std = mutation_std
         self.optimal_genotypes = [OptimalGenotype(self.n, 2*np.pi*angle/360, env_change)]
@@ -57,7 +57,7 @@ class Population:
             for _ in range(self.N)
         ])
 
-    def fitness_function(self, organism: np.ndarray) -> np.ndarray:
+    def fitness_function(self, organism: np.ndarray) -> list:
         """Oblicza fitness w stosunku do każdego z optymalnych genotypów"""
         fitness_scores = []
         for optimum in self.optimal_genotypes:
@@ -72,7 +72,8 @@ class Population:
         return organism
     
     def selection_and_count_survivors(self) -> None:
-        """Eliminuje osobniki z dopasowaniem poniżej średniej i zlicza, ile osobników o danym optymalnym genotypie przeżyło"""
+        """Eliminuje osobniki z dopasowaniem poniżej średniej i zlicza,
+         ile osobników o danym optymalnym genotypie przeżyło"""
         survivors = {i: 0 for i in range(len(self.optimal_genotypes))}
         new_population = []
 
@@ -89,7 +90,6 @@ class Population:
         # Zapisujemy liczbę osobników dla każdego genotypu
         for i, genotype in enumerate(self.optimal_genotypes):
             genotype.add_organism_count(survivors[i])
-  
 
     def reproduction(self) -> None:
         # Obliczanie dostosowania dla każdego osobnika w populacji
@@ -122,7 +122,6 @@ class Population:
             # Przesunięcie kazdego genotypu o env_change w jego kierunku
             for opt in self.optimal_genotypes:
                 opt.env_change() 
-    
 
     def evolve(self, generation: int) -> None:
         self.population = np.array(
@@ -207,4 +206,3 @@ class Population:
             opt_data[i][start:] = opt.history
 
         return df_sim, opt_data
-  
