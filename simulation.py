@@ -15,7 +15,7 @@ class OptimalGenotype:
     def add_organism_count(self, count):
         self.history.append(count)
 
-    def rotate(self):
+    def rotate(self, env_change=None):
         """Zmienia genotyp, obracając w jednym kierunku i zwraca 
         nowy optymalny genotyp, utworzony przez obrót w przeciwną stronę"""
         x1 = self.genotype[0] * np.cos(-self.angle) - self.genotype[1] * np.sin(-self.angle)
@@ -25,7 +25,8 @@ class OptimalGenotype:
         y2 = self.genotype[0] * np.sin(self.angle) + self.genotype[1] * np.cos(self.angle)
 
         self.genotype = np.array([x1, y1])
-        return OptimalGenotype(self.n, self.angle, self.env_change_rate, np.array([x2, y2]))
+        env_change = np.random.normal(env_change[0], env_change[1]) if env_change else self.env_change_rate
+        return OptimalGenotype(self.n, self.angle, env_change, np.array([x2, y2]))
     
     def env_change(self):
         self.genotype += self.env_change_rate * (self.genotype / np.linalg.norm(self.genotype))
@@ -33,7 +34,7 @@ class OptimalGenotype:
 
 class Population:
 
-    def __init__(self, N, max_N, n, env_change, T, mutation_prob, mutation_std,
+    def __init__(self, N, max_N, n, env_change, env_mode, T, mutation_prob, mutation_std,
                    fitness_std, fitness_thr, max_num_children, angle):
         self.N = N
         self.max_N = max_N
@@ -41,7 +42,10 @@ class Population:
         self.T = T   # czas, kiedy zachodzi duża zmiana w środowisku
         self.mutation_prob = mutation_prob
         self.mutation_std = mutation_std
-        self.optimal_genotypes = [OptimalGenotype(self.n, 2*np.pi*angle/360, env_change)]
+        if env_mode == 'Global':
+            self.optimal_genotypes = [OptimalGenotype(self.n, 2*np.pi*angle/360, env_change)]
+        elif env_mode == 'Local':
+            self.optimal_genotypes = [OptimalGenotype(self.n, 2 * np.pi * angle / 360, np.random.normal(env_change[0], env_change[1]))]
         self.population = self.initialize_population()
         self.max_num_children = max_num_children
         self.fitness_std = fitness_std
@@ -49,6 +53,8 @@ class Population:
         self.offspring_thresholds = np.linspace(self.fitness_threshold, 1, num=self.max_num_children+1)
         self.radii = [-2 * (self.fitness_std ** 2) * np.log(thr) if thr != 0 else 0 
                       for thr in self.offspring_thresholds]  # promienie kół związane z liczą potomstwa
+        self.env_mode = env_mode
+        self.env_change = env_change
 
     def initialize_population(self) -> np.ndarray:
         """Tworzy populację N początkowych osobników"""
@@ -115,7 +121,10 @@ class Population:
 
         if generation != 0 and generation % self.T == 0:  # kolejne optimum
             optim_idx = np.random.randint(len(self.optimal_genotypes))
-            new = self.optimal_genotypes[optim_idx].rotate()
+            if self.env_mode == 'Global':
+                new = self.optimal_genotypes[optim_idx].rotate()
+            elif self.env_mode == 'Local':
+                new = self.optimal_genotypes[optim_idx].rotate(self.env_change)
             self.optimal_genotypes.append(new)
 
         else:

@@ -15,7 +15,17 @@ def main():
         generations = st.number_input("Number of generations", value=50)
         N = st.number_input("Initial population size", value=200)
         max_N = st.number_input("Maximum population size", value=1000)
-        env_change = st.number_input("Environmental change rate", value=0.05)
+        env_mode = st.radio(
+            "Environment change mode",
+            ["Global", "Local"],
+        )
+        if env_mode == 'Global':
+            env_change = st.number_input("Environmental change rate", value=0.05)
+        elif env_mode == 'Local':
+            mean = st.number_input("Environmental change rate mean", value=0.02)
+            std = st.number_input("Environmental change rate standard deviation", value=0.02)
+            env_change = (mean, std)
+
         T = st.number_input("Time for significant environmental change", value=5)
         mutation_prob = st.slider("Mutation probability", 0.0, 1.0, 0.75)
         mutation_std = st.number_input("Mutation standard deviation", value=0.3)
@@ -30,6 +40,7 @@ def main():
                                 max_N=max_N,
                                 n=2,
                                 env_change=env_change,
+                                env_mode=env_mode,
                                 T=T,
                                 mutation_prob=mutation_prob,
                                 mutation_std=mutation_std,
