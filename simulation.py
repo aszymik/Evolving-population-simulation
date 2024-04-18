@@ -7,8 +7,8 @@ class OptimalGenotype:
     def __init__(self, n, angle, env_change, vector=None):
         self.n = n
         self.genotype = vector if vector is not None else np.random.normal(0, 0.05, size=self.n)
+        self.angle = angle
         self.env_change_rate = env_change
-        self.angle = 2 * np.pi * angle / 360
         self.history = []
 
     def add_organism_count(self, count):
@@ -41,7 +41,7 @@ class Population:
         self.T = T  # czas kiedy zachodzi duża zmiana w środowisku
         self.mutation_prob = mutation_prob
         self.mutation_std = mutation_std
-        self.optimal_genotypes = [OptimalGenotype(self.n, angle, env_change)]
+        self.optimal_genotypes = [OptimalGenotype(self.n, 2*np.pi*angle/360, env_change)]
         self.population = self.initialize_population()
         self.max_num_children = max_num_children
         self.fitness_std = fitness_std
