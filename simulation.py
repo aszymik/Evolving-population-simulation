@@ -166,6 +166,8 @@ class Population:
           * generation – nr pokolenia, 
           * radius – promień punktu (wazny szczególnie w przypadku optymalnych genotypów) 
           * type:  0 – populacja, 1 – optima
+
+        np.ndarray: macierz, której rzędami są historie genotypów, paddowane zerami
         """
 
         # 1. Tworzenie DataFrame z danymi o organizmach
@@ -177,7 +179,6 @@ class Population:
                                })
         
         # 2. Tworzenie DataFrame z optymalnymi genotypami
-        # df_opt = self.optima_df(self.optimal_genotypes[0][0], self.optimal_genotypes[0][1], 0)
         df_opt = self.optima_df(self.optimal_genotypes[0], 0)
         df_sim = pd.concat([df_pop, df_opt], axis=0)
 
@@ -200,19 +201,10 @@ class Population:
                 df = self.optima_df(self.optimal_genotypes[i], gen)
                 df_sim = pd.concat([df_sim, df], axis=0)
 
-        # dajemy zera z przodu i dzieki temu mozemy zrobic plot
-        # zwraca macierz, ktorej rzedami są historie genotypów, paddowane zerami
-
-        # opt_data = pd.DataFrame(columns=['env_change', 'num_generations', 'extinct'])        
-        # for opt in self.optimal_genotypes:
-        #     if len(opt.history):
-        #         num_gen = np.count_nonzero(opt.history)
-        #         extinct = (opt.history[-1] == 0)
-        #         opt_data.loc[len(opt_data)] = [opt.env_change_rate, num_gen, extinct]
-
+        # Macierz historii genotypów
         opt_data = np.zeros((len(self.optimal_genotypes), generations+1))
         for i, opt in enumerate(self.optimal_genotypes):
-            start = generations - len(opt.history) + 1
+            start = generations - len(opt.history) + 1  # optima pojawiają się w róznych krokach czasowych
             opt_data[i][start:] = opt.history
 
         return df_sim, opt_data
