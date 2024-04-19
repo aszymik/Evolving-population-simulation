@@ -7,7 +7,7 @@ class OptimalGenotype:
     
     def __init__(self, n, angle, env_change, vector=None):
         self.n = n
-        # jaki kształt ma ten wektor jak sie losuje? Kiedy losujemy?
+        # losujemy genotyp dla pierwszego optimum, przy kolejnych podajemy konkretny wektor
         self.genotype = vector if vector is not None else np.random.normal(0, 0.05, size=self.n)
         self.angle = angle
         self.env_change_rate = env_change
