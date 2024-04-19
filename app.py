@@ -22,7 +22,7 @@ def main():
         if env_mode == 'Global':
             env_change = st.number_input("Environmental change rate", value=0.05)
         elif env_mode == 'Local':
-            mean = st.number_input("Environmental change rate mean", value=0.02)
+            mean = st.number_input("Environmental change rate mean", value=0.03)
             std = st.number_input("Environmental change rate standard deviation", value=0.02)
             env_change = (mean, std)
 
@@ -97,7 +97,7 @@ def main():
         st.subheader('Species history')
         opt = pd.DataFrame(opt_data)
         opt = opt.T
-        fig2 = px.line(opt)
+        fig2 = px.line(opt, title="Population size in individual optima over generations")
         fig2.update_layout(xaxis_title="generation",
                            yaxis_title="number of organisms",
                            showlegend=False
