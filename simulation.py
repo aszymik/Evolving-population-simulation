@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from typing import Tuple
 
 
 class OptimalGenotype:
@@ -12,7 +13,7 @@ class OptimalGenotype:
         self.env_change_rate = env_change
         self.history = []
 
-    def add_organism_count(self, count):
+    def add_organism_count(self, count) -> None:
         self.history.append(count)
 
     def rotate(self, env_change=None):
@@ -28,7 +29,7 @@ class OptimalGenotype:
         env_change = np.random.normal(env_change[0], env_change[1]) if env_change else self.env_change_rate
         return OptimalGenotype(self.n, self.angle, env_change, np.array([x2, y2]))
     
-    def env_change(self):
+    def env_change(self) -> None:
         self.genotype += self.env_change_rate * (self.genotype / np.linalg.norm(self.genotype))
 
 
@@ -156,7 +157,7 @@ class Population:
         df['generation'] = df['generation'].astype(int)
         return df 
 
-    def simulation(self, generations: int) -> pd.DataFrame:
+    def simulation(self, generations: int) -> Tuple[pd.DataFrame, np.ndarray]:
         """
         Symuluje ewolucję populacji przez określoną liczbę pokoleń.
 
