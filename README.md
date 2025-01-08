@@ -1,23 +1,19 @@
-# Aplikacja do symulacji ewolucji populacji
+# Application for simulating population evolution
 
 ![screenshot 1](graphics/app_screen.png)
 
-## Opis Aplikacji
+## Application Description
 
-Jest to aplikacja **Streamlit** do symulowania ewolucji populacji uwzględniający specjację gatunków. W aplikacji można zmieniać różne parametry, takie jak:
+This project is a streamlit application for simulating population evolution taking into account speciation. In the application, you can change various parameters, such as:
 
-- Liczba pokoleń
-- Prawdopodobieństwo mutacji
-- Maksymalna liczba potomstwa
+- Number of generations
+- Mutation probability
+- Maximum number of offspring
 
-i wiele innych. Dzięki temu, możesz obserwować, jak te parametry wpływają na rozwój populacji.
+and observe how these parameters affect the development of the population.
 
-## Wymagane Biblioteki
+## Running the Program
 
-Do uruchomienia tego programu potrzebujesz pewnych bibliotek. Możesz je zainstalować za pomocą poniższej komendy:
-```pip install -r requirements.txt```
+The required libraries can be installed them using ```pip install -r requirements.txt```.
 
-## Uruchomienie Programu
-
-Aby uruchomić program, przejdź do katalogu źródłowego i wpisz następującą komendę:
-```streamlit run app.py```
+To launch the program, go to the source directory and run ```streamlit run app.py```.
